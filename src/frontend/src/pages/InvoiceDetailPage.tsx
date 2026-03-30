@@ -12,9 +12,9 @@ interface Props {
 
 const fmtCurrency = (v: bigint) => `$${(Number(v) / 100).toFixed(2)}`;
 const tsToDate = (ts: bigint) =>
-  ts ? new Date(Number(ts) / 1_000_000).toLocaleDateString() : "—";
+  ts ? new Date(Number(ts) / 1_000_000).toLocaleDateString() : "\u2014";
 const tsToDateShort = (ts: bigint) =>
-  ts ? new Date(Number(ts) / 1_000_000).toISOString().split("T")[0] : "—";
+  ts ? new Date(Number(ts) / 1_000_000).toISOString().split("T")[0] : "\u2014";
 
 export default function InvoiceDetailPage({
   actor,
@@ -37,6 +37,7 @@ export default function InvoiceDetailPage({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <button
+          type="button"
           onClick={() => navigate({ name: "invoices" })}
           className="flex items-center gap-2 text-[#94A3B8] hover:text-white transition-colors"
         >
@@ -83,7 +84,7 @@ export default function InvoiceDetailPage({
               From
             </p>
             <p className="font-bold text-gray-900">
-              {invoice.ourCompanyName || "—"}
+              {invoice.ourCompanyName || "\u2014"}
             </p>
             <p className="text-gray-600 text-sm whitespace-pre-line">
               {invoice.ourAddress}
@@ -103,7 +104,7 @@ export default function InvoiceDetailPage({
               Bill To
             </p>
             <p className="font-bold text-gray-900">
-              {invoice.clientCompanyName || "—"}
+              {invoice.clientCompanyName || "\u2014"}
             </p>
             <p className="text-gray-600 text-sm whitespace-pre-line">
               {invoice.clientAddress}
@@ -137,7 +138,7 @@ export default function InvoiceDetailPage({
           <div>
             <p className="text-xs text-gray-400">Payment Terms</p>
             <p className="font-semibold text-gray-900">
-              {invoice.paymentTerms || "—"}
+              {invoice.paymentTerms || "\u2014"}
             </p>
           </div>
           {invoice.costCenter && (
@@ -178,8 +179,11 @@ export default function InvoiceDetailPage({
             </tr>
           </thead>
           <tbody>
-            {invoice.lineItems.map((li, i) => (
-              <tr key={i} className="border-b border-gray-100">
+            {invoice.lineItems.map((li) => (
+              <tr
+                key={String(li.date) + li.description + String(li.visitTime)}
+                className="border-b border-gray-100"
+              >
                 <td className="py-3 text-sm text-gray-700">
                   {tsToDateShort(li.date)}
                 </td>

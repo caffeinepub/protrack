@@ -57,6 +57,7 @@ type InvoiceFormData = {
   taxPercent: string;
   discountPercent: string;
   lineItems: Array<{
+    _key: string;
     date: string;
     description: string;
     visitTime: string;
@@ -89,6 +90,7 @@ const emptyForm = (): InvoiceFormData => ({
   discountPercent: "0",
   lineItems: [
     {
+      _key: "li-0",
       date: "",
       description: "",
       visitTime: "0",
@@ -179,7 +181,8 @@ const invoiceToForm = (inv: Invoice): InvoiceFormData => ({
   ourWebsite: inv.ourWebsite,
   taxPercent: String(Number(inv.taxPercent)),
   discountPercent: String(Number(inv.discountPercent)),
-  lineItems: inv.lineItems.map((li) => ({
+  lineItems: inv.lineItems.map((li, i) => ({
+    _key: `li-${i}`,
     date: tsToDateStr(li.date),
     description: li.description,
     visitTime: String(Number(li.visitTime) / 100),
@@ -356,6 +359,7 @@ export default function InvoicesPage({ actor, navigate }: Props) {
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-2">
                       <button
+                        type="button"
                         onClick={() =>
                           navigate({
                             name: "invoice-detail",
@@ -367,12 +371,14 @@ export default function InvoicesPage({ actor, navigate }: Props) {
                         <Eye className="w-4 h-4" />
                       </button>
                       <button
+                        type="button"
                         onClick={() => openEdit(inv)}
                         className="p-1.5 text-[#94A3B8] hover:text-white hover:bg-white/10 rounded-lg transition-all"
                       >
                         <Pencil className="w-4 h-4" />
                       </button>
                       <button
+                        type="button"
                         onClick={() => deleteMutation.mutate(inv.id)}
                         className="p-1.5 text-[#94A3B8] hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
                       >
@@ -440,6 +446,7 @@ function InvoiceForm({
       lineItems: [
         ...form.lineItems,
         {
+          _key: `li-${Date.now()}`,
           date: "",
           description: "",
           visitTime: "0",
@@ -471,16 +478,22 @@ function InvoiceForm({
         <h4 className="text-white font-semibold mb-3">Invoice Information</h4>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <div>
-            <label className={labelClass}>Invoice Number</label>
+            <label htmlFor="inv-invoiceNumber" className={labelClass}>
+              Invoice Number
+            </label>
             <Input
+              id="inv-invoiceNumber"
               className={inputClass}
               value={form.invoiceNumber}
               onChange={(e) => set("invoiceNumber", e.target.value)}
             />
           </div>
           <div>
-            <label className={labelClass}>Status</label>
+            <label htmlFor="inv-status" className={labelClass}>
+              Status
+            </label>
             <select
+              id="inv-status"
               className="w-full bg-[#0E1626] border border-[#223047] text-white rounded-md px-3 py-2 text-sm"
               value={form.status}
               onChange={(e) => set("status", e.target.value)}
@@ -491,16 +504,22 @@ function InvoiceForm({
             </select>
           </div>
           <div>
-            <label className={labelClass}>Cost Center</label>
+            <label htmlFor="inv-costCenter" className={labelClass}>
+              Cost Center
+            </label>
             <Input
+              id="inv-costCenter"
               className={inputClass}
               value={form.costCenter}
               onChange={(e) => set("costCenter", e.target.value)}
             />
           </div>
           <div>
-            <label className={labelClass}>Invoice Date</label>
+            <label htmlFor="inv-invoiceDate" className={labelClass}>
+              Invoice Date
+            </label>
             <Input
+              id="inv-invoiceDate"
               type="date"
               className={inputClass}
               value={form.invoiceDate}
@@ -508,8 +527,11 @@ function InvoiceForm({
             />
           </div>
           <div>
-            <label className={labelClass}>Invoice Month</label>
+            <label htmlFor="inv-invoiceMonth" className={labelClass}>
+              Invoice Month
+            </label>
             <Input
+              id="inv-invoiceMonth"
               type="month"
               className={inputClass}
               value={form.invoiceMonth}
@@ -517,8 +539,11 @@ function InvoiceForm({
             />
           </div>
           <div>
-            <label className={labelClass}>Due Date</label>
+            <label htmlFor="inv-dueDate" className={labelClass}>
+              Due Date
+            </label>
             <Input
+              id="inv-dueDate"
               type="date"
               className={inputClass}
               value={form.dueDate}
@@ -526,8 +551,11 @@ function InvoiceForm({
             />
           </div>
           <div className="col-span-2 md:col-span-1">
-            <label className={labelClass}>Payment Terms</label>
+            <label htmlFor="inv-paymentTerms" className={labelClass}>
+              Payment Terms
+            </label>
             <Input
+              id="inv-paymentTerms"
               className={inputClass}
               value={form.paymentTerms}
               onChange={(e) => set("paymentTerms", e.target.value)}
@@ -549,18 +577,19 @@ function InvoiceForm({
                 "clientEmail",
                 "clientWebsite",
               ] as (keyof InvoiceFormData)[]
-            ).map((f) => (
-              <div key={f}>
-                <label className={labelClass}>
-                  {f
+            ).map((field) => (
+              <div key={field}>
+                <label htmlFor={`inv-${field}`} className={labelClass}>
+                  {field
                     .replace("client", "")
                     .replace(/([A-Z])/g, " $1")
                     .trim()}
                 </label>
                 <Input
+                  id={`inv-${field}`}
                   className={inputClass}
-                  value={form[f] as string}
-                  onChange={(e) => set(f, e.target.value)}
+                  value={form[field] as string}
+                  onChange={(e) => set(field, e.target.value)}
                 />
               </div>
             ))}
@@ -577,18 +606,19 @@ function InvoiceForm({
                 "ourEmail",
                 "ourWebsite",
               ] as (keyof InvoiceFormData)[]
-            ).map((f) => (
-              <div key={f}>
-                <label className={labelClass}>
-                  {f
+            ).map((field) => (
+              <div key={field}>
+                <label htmlFor={`inv-${field}`} className={labelClass}>
+                  {field
                     .replace("our", "")
                     .replace(/([A-Z])/g, " $1")
                     .trim()}
                 </label>
                 <Input
+                  id={`inv-${field}`}
                   className={inputClass}
-                  value={form[f] as string}
-                  onChange={(e) => set(f, e.target.value)}
+                  value={form[field] as string}
+                  onChange={(e) => set(field, e.target.value)}
                 />
               </div>
             ))}
@@ -609,102 +639,141 @@ function InvoiceForm({
           </Button>
         </div>
         <div className="space-y-3">
-          {form.lineItems.map((li, idx) => (
-            <div
-              key={idx}
-              className="bg-[#0E1626] border border-[#223047] rounded-lg p-4"
-            >
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
-                <div>
-                  <label className={labelClass}>Date</label>
-                  <Input
-                    type="date"
-                    className={inputClass}
-                    value={li.date}
-                    onChange={(e) =>
-                      updateLineItem(idx, "date", e.target.value)
-                    }
-                  />
+          {form.lineItems.map((li, idx) => {
+            return (
+              <div
+                key={li._key}
+                className="bg-[#0E1626] border border-[#223047] rounded-lg p-4"
+              >
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
+                  <div>
+                    <label
+                      htmlFor={`inv-li-${idx}-date`}
+                      className={labelClass}
+                    >
+                      Date
+                    </label>
+                    <Input
+                      id={`inv-li-${idx}-date`}
+                      type="date"
+                      className={inputClass}
+                      value={li.date}
+                      onChange={(e) =>
+                        updateLineItem(idx, "date", e.target.value)
+                      }
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label
+                      htmlFor={`inv-li-${idx}-description`}
+                      className={labelClass}
+                    >
+                      Description
+                    </label>
+                    <Input
+                      id={`inv-li-${idx}-description`}
+                      className={inputClass}
+                      value={li.description}
+                      onChange={(e) =>
+                        updateLineItem(idx, "description", e.target.value)
+                      }
+                    />
+                  </div>
                 </div>
-                <div className="md:col-span-2">
-                  <label className={labelClass}>Description</label>
-                  <Input
-                    className={inputClass}
-                    value={li.description}
-                    onChange={(e) =>
-                      updateLineItem(idx, "description", e.target.value)
-                    }
-                  />
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div>
+                    <label
+                      htmlFor={`inv-li-${idx}-visitTime`}
+                      className={labelClass}
+                    >
+                      Visit Time (hrs)
+                    </label>
+                    <Input
+                      id={`inv-li-${idx}-visitTime`}
+                      type="number"
+                      step="0.5"
+                      className={inputClass}
+                      value={li.visitTime}
+                      onChange={(e) =>
+                        updateLineItem(idx, "visitTime", e.target.value)
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor={`inv-li-${idx}-hourlyRate`}
+                      className={labelClass}
+                    >
+                      Hourly Rate ($)
+                    </label>
+                    <Input
+                      id={`inv-li-${idx}-hourlyRate`}
+                      type="number"
+                      step="0.01"
+                      className={inputClass}
+                      value={li.hourlyRate}
+                      onChange={(e) =>
+                        updateLineItem(idx, "hourlyRate", e.target.value)
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor={`inv-li-${idx}-travelCost`}
+                      className={labelClass}
+                    >
+                      Travel Cost ($)
+                    </label>
+                    <Input
+                      id={`inv-li-${idx}-travelCost`}
+                      type="number"
+                      step="0.01"
+                      className={inputClass}
+                      value={li.travelCost}
+                      onChange={(e) =>
+                        updateLineItem(idx, "travelCost", e.target.value)
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor={`inv-li-${idx}-materialCost`}
+                      className={labelClass}
+                    >
+                      Material Cost ($)
+                    </label>
+                    <Input
+                      id={`inv-li-${idx}-materialCost`}
+                      type="number"
+                      step="0.01"
+                      className={inputClass}
+                      value={li.materialCost}
+                      onChange={(e) =>
+                        updateLineItem(idx, "materialCost", e.target.value)
+                      }
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <div>
-                  <label className={labelClass}>Visit Time (hrs)</label>
-                  <Input
-                    type="number"
-                    step="0.5"
-                    className={inputClass}
-                    value={li.visitTime}
-                    onChange={(e) =>
-                      updateLineItem(idx, "visitTime", e.target.value)
-                    }
-                  />
-                </div>
-                <div>
-                  <label className={labelClass}>Hourly Rate ($)</label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    className={inputClass}
-                    value={li.hourlyRate}
-                    onChange={(e) =>
-                      updateLineItem(idx, "hourlyRate", e.target.value)
-                    }
-                  />
-                </div>
-                <div>
-                  <label className={labelClass}>Travel Cost ($)</label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    className={inputClass}
-                    value={li.travelCost}
-                    onChange={(e) =>
-                      updateLineItem(idx, "travelCost", e.target.value)
-                    }
-                  />
-                </div>
-                <div>
-                  <label className={labelClass}>Material Cost ($)</label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    className={inputClass}
-                    value={li.materialCost}
-                    onChange={(e) =>
-                      updateLineItem(idx, "materialCost", e.target.value)
-                    }
-                  />
-                </div>
-              </div>
-              <div className="flex items-center justify-between mt-3">
-                <span className="text-xs text-[#94A3B8]">
-                  Line Total:{" "}
-                  <span className="text-white font-semibold">
-                    ${calcLineItem(li).toFixed(2)}
+                <div className="flex items-center justify-between mt-3">
+                  <span className="text-xs text-[#94A3B8]">
+                    Line Total:{" "}
+                    <span className="text-white font-semibold">
+                      ${calcLineItem(li).toFixed(2)}
+                    </span>
                   </span>
-                </span>
-                {form.lineItems.length > 1 && (
-                  <button
-                    onClick={() => removeLineItem(idx)}
-                    className="text-red-400 hover:text-red-300 text-xs"
-                  >
-                    × Remove
-                  </button>
-                )}
+                  {form.lineItems.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeLineItem(idx)}
+                      className="text-red-400 hover:text-red-300 text-xs"
+                    >
+                      &times; Remove
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 

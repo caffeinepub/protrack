@@ -195,10 +195,11 @@ export default function ReportsPage({ actor, navigate: _navigate }: Props) {
                       `${name} ${(percent * 100).toFixed(0)}%`
                     }
                   >
-                    {pieData.map((_, i) => (
-                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                    {pieData.map((entry, i) => (
+                      <Cell key={entry.name} fill={COLORS[i % COLORS.length]} />
                     ))}
                   </Pie>
+                  <Legend />
                   <Tooltip
                     contentStyle={{
                       background: "#0E1626",

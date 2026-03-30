@@ -303,14 +303,14 @@ export default function ProjectsPage({ actor, navigate }: Props) {
                 >
                   <td className="px-4 py-3">
                     <p className="text-sm text-white font-medium">
-                      {p.clientCompanyName || "—"}
+                      {p.clientCompanyName || "\u2014"}
                     </p>
                     <p className="text-xs text-[#94A3B8]">
                       {p.projectHandleClient}
                     </p>
                   </td>
                   <td className="px-4 py-3 text-sm text-[#94A3B8] hidden md:table-cell">
-                    {p.visitLocation || "—"}
+                    {p.visitLocation || "\u2014"}
                   </td>
                   <td className="px-4 py-3 text-sm text-[#94A3B8] hidden lg:table-cell">
                     {tsToDate(p.visitDate)}
@@ -341,6 +341,7 @@ export default function ProjectsPage({ actor, navigate }: Props) {
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-2">
                       <button
+                        type="button"
                         onClick={() =>
                           navigate({ name: "project-detail", projectId: p.id })
                         }
@@ -349,12 +350,14 @@ export default function ProjectsPage({ actor, navigate }: Props) {
                         <Eye className="w-4 h-4" />
                       </button>
                       <button
+                        type="button"
                         onClick={() => openEdit(p)}
                         className="p-1.5 text-[#94A3B8] hover:text-white hover:bg-white/10 rounded-lg transition-all"
                       >
                         <Pencil className="w-4 h-4" />
                       </button>
                       <button
+                        type="button"
                         onClick={() => deleteMutation.mutate(p.id)}
                         className="p-1.5 text-[#94A3B8] hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
                       >
@@ -412,48 +415,66 @@ function ProjectForm({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <label className={labelClass}>Client Company Name</label>
+        <label htmlFor="proj-clientCompanyName" className={labelClass}>
+          Client Company Name
+        </label>
         <Input
+          id="proj-clientCompanyName"
           className={inputClass}
           value={form.clientCompanyName}
           onChange={(e) => set("clientCompanyName", e.target.value)}
         />
       </div>
       <div>
-        <label className={labelClass}>Project Handle (Client)</label>
+        <label htmlFor="proj-projectHandleClient" className={labelClass}>
+          Project Handle (Client)
+        </label>
         <Input
+          id="proj-projectHandleClient"
           className={inputClass}
           value={form.projectHandleClient}
           onChange={(e) => set("projectHandleClient", e.target.value)}
         />
       </div>
       <div>
-        <label className={labelClass}>Project Handle (Our Team)</label>
+        <label htmlFor="proj-projectHandleTeam" className={labelClass}>
+          Project Handle (Our Team)
+        </label>
         <Input
+          id="proj-projectHandleTeam"
           className={inputClass}
           value={form.projectHandleTeam}
           onChange={(e) => set("projectHandleTeam", e.target.value)}
         />
       </div>
       <div>
-        <label className={labelClass}>Visit Location</label>
+        <label htmlFor="proj-visitLocation" className={labelClass}>
+          Visit Location
+        </label>
         <Input
+          id="proj-visitLocation"
           className={inputClass}
           value={form.visitLocation}
           onChange={(e) => set("visitLocation", e.target.value)}
         />
       </div>
       <div className="md:col-span-2">
-        <label className={labelClass}>Tech Details</label>
+        <label htmlFor="proj-techDetails" className={labelClass}>
+          Tech Details
+        </label>
         <Input
+          id="proj-techDetails"
           className={inputClass}
           value={form.techDetails}
           onChange={(e) => set("techDetails", e.target.value)}
         />
       </div>
       <div>
-        <label className={labelClass}>Status</label>
+        <label htmlFor="proj-status" className={labelClass}>
+          Status
+        </label>
         <select
+          id="proj-status"
           className="w-full bg-[#0E1626] border border-[#223047] text-white rounded-md px-3 py-2 text-sm"
           value={form.status}
           onChange={(e) => set("status", e.target.value)}
@@ -470,8 +491,11 @@ function ProjectForm({
         </select>
       </div>
       <div>
-        <label className={labelClass}>Progress (%)</label>
+        <label htmlFor="proj-progress" className={labelClass}>
+          Progress (%)
+        </label>
         <Input
+          id="proj-progress"
           type="number"
           min="0"
           max="100"
@@ -481,8 +505,11 @@ function ProjectForm({
         />
       </div>
       <div>
-        <label className={labelClass}>Visit Date</label>
+        <label htmlFor="proj-visitDate" className={labelClass}>
+          Visit Date
+        </label>
         <Input
+          id="proj-visitDate"
           type="date"
           className={inputClass}
           value={form.visitDate}
@@ -490,8 +517,11 @@ function ProjectForm({
         />
       </div>
       <div>
-        <label className={labelClass}>Time In</label>
+        <label htmlFor="proj-timeIn" className={labelClass}>
+          Time In
+        </label>
         <Input
+          id="proj-timeIn"
           type="time"
           className={inputClass}
           value={form.timeIn}
@@ -499,8 +529,11 @@ function ProjectForm({
         />
       </div>
       <div>
-        <label className={labelClass}>Time Out</label>
+        <label htmlFor="proj-timeOut" className={labelClass}>
+          Time Out
+        </label>
         <Input
+          id="proj-timeOut"
           type="time"
           className={inputClass}
           value={form.timeOut}
@@ -508,8 +541,11 @@ function ProjectForm({
         />
       </div>
       <div>
-        <label className={labelClass}>Total Time (hours)</label>
+        <label htmlFor="proj-totalTime" className={labelClass}>
+          Total Time (hours)
+        </label>
         <Input
+          id="proj-totalTime"
           type="number"
           className={inputClass}
           value={form.totalTime}
@@ -517,8 +553,11 @@ function ProjectForm({
         />
       </div>
       <div>
-        <label className={labelClass}>Client Agreed Rate ($)</label>
+        <label htmlFor="proj-clientAgreedRate" className={labelClass}>
+          Client Agreed Rate ($)
+        </label>
         <Input
+          id="proj-clientAgreedRate"
           type="number"
           step="0.01"
           className={inputClass}
@@ -527,8 +566,11 @@ function ProjectForm({
         />
       </div>
       <div>
-        <label className={labelClass}>Tech Agreed Rate ($)</label>
+        <label htmlFor="proj-techAgreedRate" className={labelClass}>
+          Tech Agreed Rate ($)
+        </label>
         <Input
+          id="proj-techAgreedRate"
           type="number"
           step="0.01"
           className={inputClass}
@@ -537,8 +579,11 @@ function ProjectForm({
         />
       </div>
       <div>
-        <label className={labelClass}>Travel Cost ($)</label>
+        <label htmlFor="proj-travelCost" className={labelClass}>
+          Travel Cost ($)
+        </label>
         <Input
+          id="proj-travelCost"
           type="number"
           step="0.01"
           className={inputClass}
@@ -547,8 +592,11 @@ function ProjectForm({
         />
       </div>
       <div>
-        <label className={labelClass}>Material Cost ($)</label>
+        <label htmlFor="proj-materialCost" className={labelClass}>
+          Material Cost ($)
+        </label>
         <Input
+          id="proj-materialCost"
           type="number"
           step="0.01"
           className={inputClass}
@@ -557,8 +605,11 @@ function ProjectForm({
         />
       </div>
       <div className="md:col-span-2">
-        <label className={labelClass}>Tech Bank Details</label>
+        <label htmlFor="proj-techBankDetails" className={labelClass}>
+          Tech Bank Details
+        </label>
         <Input
+          id="proj-techBankDetails"
           className={inputClass}
           value={form.techBankDetails}
           onChange={(e) => set("techBankDetails", e.target.value)}

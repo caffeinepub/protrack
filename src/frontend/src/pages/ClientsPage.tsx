@@ -147,12 +147,14 @@ export default function ClientsPage({ actor, navigate: _navigate }: Props) {
                 </div>
                 <div className="flex gap-2">
                   <button
+                    type="button"
                     onClick={() => openEdit(c)}
                     className="p-1.5 text-[#94A3B8] hover:text-white hover:bg-white/10 rounded-lg transition-all"
                   >
                     <Pencil className="w-4 h-4" />
                   </button>
                   <button
+                    type="button"
                     onClick={() => deleteMutation.mutate(c.id)}
                     className="p-1.5 text-[#94A3B8] hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
                   >
@@ -193,10 +195,14 @@ export default function ClientsPage({ actor, navigate: _navigate }: Props) {
               ] as (keyof ClientForm)[]
             ).map((field) => (
               <div key={field}>
-                <label className="block text-xs text-[#94A3B8] mb-1 capitalize">
+                <label
+                  htmlFor={`client-${field}`}
+                  className="block text-xs text-[#94A3B8] mb-1 capitalize"
+                >
                   {field.replace(/([A-Z])/g, " $1")}
                 </label>
                 <Input
+                  id={`client-${field}`}
                   className="bg-[#0E1626] border-[#223047] text-white"
                   value={form[field]}
                   onChange={(e) =>

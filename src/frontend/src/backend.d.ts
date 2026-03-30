@@ -111,6 +111,10 @@ export interface ClientRevenue {
 export interface UserProfile {
     name: string;
 }
+export interface UserEntry {
+    principal: Principal;
+    role: UserRole;
+}
 export interface InvoiceLineItem {
     date: Time;
     hourlyRate: bigint;
@@ -166,11 +170,14 @@ export interface backendInterface {
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     listAllInvoices(): Promise<Array<Invoice>>;
+    listAllUsers(): Promise<Array<UserEntry>>;
     listClients(): Promise<Array<Client>>;
     listInvoicesByProject(projectId: bigint): Promise<Array<Invoice>>;
     listProjects(): Promise<Array<Project>>;
     listTasksByProject(projectId: bigint): Promise<Array<Task>>;
     markNotificationAsRead(notificationId: bigint): Promise<void>;
+    registerCaller(): Promise<void>;
+    removeUser(user: Principal): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     updateClient(clientId: bigint, input: Client): Promise<void>;
     updateCompanySettings(settings: CompanySettings): Promise<void>;

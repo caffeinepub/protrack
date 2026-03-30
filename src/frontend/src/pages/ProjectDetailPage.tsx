@@ -30,9 +30,9 @@ interface Props {
 }
 
 const tsToDate = (ts: bigint) =>
-  ts ? new Date(Number(ts) / 1_000_000).toLocaleDateString() : "—";
+  ts ? new Date(Number(ts) / 1_000_000).toLocaleDateString() : "\u2014";
 const tsToTime = (ts: bigint) => {
-  if (!ts) return "—";
+  if (!ts) return "\u2014";
   const d = new Date(Number(ts) / 1_000_000);
   return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 };
@@ -118,6 +118,7 @@ export default function ProjectDetailPage({
   return (
     <div className="space-y-6">
       <button
+        type="button"
         onClick={() => navigate({ name: "projects" })}
         className="flex items-center gap-2 text-[#94A3B8] hover:text-white transition-colors"
       >
@@ -160,11 +161,11 @@ export default function ProjectDetailPage({
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           <DetailItem
             label="Project Handle (Client)"
-            value={project.projectHandleClient || "—"}
+            value={project.projectHandleClient || "\u2014"}
           />
           <DetailItem
             label="Project Handle (Team)"
-            value={project.projectHandleTeam || "—"}
+            value={project.projectHandleTeam || "\u2014"}
           />
           <DetailItem label="Visit Date" value={tsToDate(project.visitDate)} />
           <DetailItem label="Time In" value={tsToTime(project.timeIn)} />
@@ -248,6 +249,7 @@ export default function ProjectDetailPage({
                 className="flex items-start gap-3 px-6 py-4 hover:bg-white/5"
               >
                 <button
+                  type="button"
                   onClick={() => toggleTask.mutate(task)}
                   className="mt-0.5 flex-shrink-0"
                 >
@@ -259,7 +261,11 @@ export default function ProjectDetailPage({
                 </button>
                 <div className="flex-1 min-w-0">
                   <p
-                    className={`text-sm font-medium ${task.completed ? "line-through text-[#94A3B8]" : "text-white"}`}
+                    className={`text-sm font-medium ${
+                      task.completed
+                        ? "line-through text-[#94A3B8]"
+                        : "text-white"
+                    }`}
                   >
                     {task.title}
                   </p>
@@ -276,6 +282,7 @@ export default function ProjectDetailPage({
                   </div>
                 </div>
                 <button
+                  type="button"
                   onClick={() => deleteTask.mutate(task.id)}
                   className="p-1 text-[#94A3B8] hover:text-red-400 hover:bg-red-400/10 rounded transition-all"
                 >
@@ -307,9 +314,10 @@ export default function ProjectDetailPage({
             </p>
           ) : (
             invoices.map((inv) => (
-              <div
+              <button
+                type="button"
                 key={inv.id.toString()}
-                className="flex items-center justify-between px-6 py-4 hover:bg-white/5 cursor-pointer"
+                className="w-full flex items-center justify-between px-6 py-4 hover:bg-white/5 text-left"
                 onClick={() =>
                   navigate({ name: "invoice-detail", invoiceId: inv.id })
                 }
@@ -340,7 +348,7 @@ export default function ProjectDetailPage({
                     {inv.status}
                   </span>
                 </div>
-              </div>
+              </button>
             ))
           )}
         </div>
@@ -353,8 +361,14 @@ export default function ProjectDetailPage({
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <label className="block text-xs text-[#94A3B8] mb-1">Title</label>
+              <label
+                htmlFor="task-title"
+                className="block text-xs text-[#94A3B8] mb-1"
+              >
+                Title
+              </label>
               <Input
+                id="task-title"
                 className="bg-[#0E1626] border-[#223047] text-white"
                 value={taskForm.title}
                 onChange={(e) =>
@@ -363,10 +377,14 @@ export default function ProjectDetailPage({
               />
             </div>
             <div>
-              <label className="block text-xs text-[#94A3B8] mb-1">
+              <label
+                htmlFor="task-description"
+                className="block text-xs text-[#94A3B8] mb-1"
+              >
                 Description
               </label>
               <Input
+                id="task-description"
                 className="bg-[#0E1626] border-[#223047] text-white"
                 value={taskForm.description}
                 onChange={(e) =>
@@ -375,10 +393,14 @@ export default function ProjectDetailPage({
               />
             </div>
             <div>
-              <label className="block text-xs text-[#94A3B8] mb-1">
+              <label
+                htmlFor="task-hoursSpent"
+                className="block text-xs text-[#94A3B8] mb-1"
+              >
                 Hours Spent
               </label>
               <Input
+                id="task-hoursSpent"
                 type="number"
                 className="bg-[#0E1626] border-[#223047] text-white"
                 value={taskForm.hoursSpent}
@@ -419,7 +441,9 @@ function DetailItem({
     <div>
       <p className="text-xs text-[#94A3B8]">{label}</p>
       <p
-        className={`text-sm font-medium mt-0.5 ${highlight ? "text-green-400" : "text-white"}`}
+        className={`text-sm font-medium mt-0.5 ${
+          highlight ? "text-green-400" : "text-white"
+        }`}
       >
         {value}
       </p>

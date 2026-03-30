@@ -10,17 +10,18 @@ import {
   Menu,
   Moon,
   Settings,
+  Shield,
   Sun,
   TrendingUp,
   Users,
   X,
 } from "lucide-react";
-import { type ReactNode, useState } from "react";
+import { type KeyboardEvent, type ReactNode, useState } from "react";
 import type { Page } from "../App";
+import { UserRole } from "../backend";
 import type { backendInterface } from "../backend";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import { cn } from "../lib/utils";
-import { Badge } from "./ui/badge";
 
 interface LayoutProps {
   children: ReactNode;
@@ -29,9 +30,10 @@ interface LayoutProps {
   navigate: (page: Page) => void;
   darkMode: boolean;
   toggleDarkMode: () => void;
+  userRole?: UserRole;
 }
 
-const navItems = [
+const baseNavItems = [
   { name: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { name: "projects", label: "Projects", icon: FolderKanban },
   { name: "invoices", label: "Invoices", icon: FileText },
@@ -40,6 +42,12 @@ const navItems = [
   { name: "settings", label: "Settings", icon: Settings },
 ];
 
+function onEnter(fn: () => void) {
+  return (e: KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") fn();
+  };
+}
+
 export default function Layout({
   children,
   actor,
@@ -47,6 +55,7 @@ export default function Layout({
   navigate,
   darkMode,
   toggleDarkMode,
+  userRole,
 }: LayoutProps) {
   const { identity, clear } = useInternetIdentity();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -55,6 +64,13 @@ export default function Layout({
   const qc = useQueryClient();
 
   const userId = identity?.getPrincipal();
+
+  const navItems = [
+    ...baseNavItems,
+    ...(userRole === UserRole.admin
+      ? [{ name: "users", label: "User Management", icon: Shield }]
+      : []),
+  ];
 
   const { data: notifications = [] } = useQuery({
     queryKey: ["notifications", userId?.toString()],
@@ -81,8 +97,12 @@ export default function Layout({
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
+          role="button"
+          tabIndex={0}
+          aria-label="Close sidebar"
           className="fixed inset-0 bg-black/50 z-20 lg:hidden"
           onClick={() => setSidebarOpen(false)}
+          onKeyDown={onEnter(() => setSidebarOpen(false))}
         />
       )}
 
@@ -100,6 +120,7 @@ export default function Layout({
           </div>
           <span className="text-white font-bold text-lg">ProTrack</span>
           <button
+            type="button"
             className="ml-auto lg:hidden text-[#94A3B8]"
             onClick={() => setSidebarOpen(false)}
           >
@@ -111,10 +132,12 @@ export default function Layout({
         <nav className="flex-1 px-3 py-4 space-y-1">
           {navItems.map(({ name, label, icon: Icon }) => {
             const active =
-              currentPage === name || currentPage.startsWith(name + "-");
+              currentPage === name || currentPage.startsWith(`${name}-`);
             return (
               <button
+                type="button"
                 key={name}
+                data-ocid={`nav.${name}.link`}
                 onClick={() => {
                   navigate({ name } as Page);
                   setSidebarOpen(false);
@@ -141,6 +164,7 @@ export default function Layout({
         {/* Footer */}
         <div className="px-3 pb-4 border-t border-[#223047] pt-4">
           <button
+            type="button"
             onClick={toggleDarkMode}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-[#94A3B8] hover:text-white hover:bg-white/5 transition-all"
           >
@@ -159,6 +183,7 @@ export default function Layout({
         {/* Header */}
         <header className="flex items-center gap-4 px-6 py-4 border-b border-[#223047] bg-[#0E1626]">
           <button
+            type="button"
             className="lg:hidden text-[#94A3B8]"
             onClick={() => setSidebarOpen(true)}
           >
@@ -169,6 +194,7 @@ export default function Layout({
             {/* Notifications */}
             <div className="relative">
               <button
+                type="button"
                 onClick={() => setNotifOpen(!notifOpen)}
                 className="relative p-2 text-[#94A3B8] hover:text-white hover:bg-white/5 rounded-lg transition-all"
               >
@@ -193,10 +219,11 @@ export default function Layout({
                       </p>
                     ) : (
                       notifications.slice(0, 10).map((n) => (
-                        <div
+                        <button
+                          type="button"
                           key={n.id.toString()}
                           className={cn(
-                            "px-4 py-3 border-b border-[#223047]/50 cursor-pointer hover:bg-white/5",
+                            "w-full text-left px-4 py-3 border-b border-[#223047]/50 hover:bg-white/5",
                             !n.read && "bg-blue-600/5",
                           )}
                           onClick={() => markRead.mutate(n.id)}
@@ -212,7 +239,7 @@ export default function Layout({
                           <p className="text-xs text-[#94A3B8] mt-0.5">
                             {n.message}
                           </p>
-                        </div>
+                        </button>
                       ))
                     )}
                   </div>
@@ -223,12 +250,25 @@ export default function Layout({
             {/* User menu */}
             <div className="relative">
               <button
+                type="button"
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
                 className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white/5 transition-all"
               >
                 <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
                   {userId?.toString().slice(0, 2).toUpperCase() ?? "U"}
                 </div>
+                {userRole && (
+                  <span
+                    className={cn(
+                      "text-xs px-1.5 py-0.5 rounded font-medium hidden sm:block",
+                      userRole === UserRole.admin
+                        ? "bg-blue-500/20 text-blue-400"
+                        : "bg-green-500/20 text-green-400",
+                    )}
+                  >
+                    {userRole}
+                  </span>
+                )}
                 <ChevronDown className="w-4 h-4 text-[#94A3B8]" />
               </button>
               {userMenuOpen && (
@@ -240,6 +280,8 @@ export default function Layout({
                     </p>
                   </div>
                   <button
+                    type="button"
+                    data-ocid="nav.sign_out.button"
                     onClick={clear}
                     className="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-400 hover:bg-white/5 transition-all"
                   >

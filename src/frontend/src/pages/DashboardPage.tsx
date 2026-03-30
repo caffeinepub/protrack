@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { CheckCircle, DollarSign, FileText, FolderKanban } from "lucide-react";
+import type { KeyboardEvent } from "react";
 import {
   Area,
   AreaChart,
@@ -68,6 +69,12 @@ const invoiceStatusColor = (s: Variant_paid_unpaid_draft) => {
     return "bg-red-900/50 text-red-400 border-red-700/50";
   return "bg-slate-800 text-slate-400 border-slate-600";
 };
+
+function onEnter(fn: () => void) {
+  return (e: KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") fn();
+  };
+}
 
 export default function DashboardPage({ actor, navigate }: Props) {
   const { data: projects = [] } = useQuery({
@@ -245,6 +252,7 @@ export default function DashboardPage({ actor, navigate }: Props) {
               Recent Projects
             </CardTitle>
             <button
+              type="button"
               onClick={() => navigate({ name: "projects" })}
               className="text-blue-400 text-xs hover:underline"
             >
@@ -270,13 +278,17 @@ export default function DashboardPage({ actor, navigate }: Props) {
                 {projects.slice(0, 5).map((p) => (
                   <tr
                     key={p.id.toString()}
+                    tabIndex={0}
                     className="border-b border-[#223047]/50 hover:bg-white/5 cursor-pointer"
                     onClick={() =>
                       navigate({ name: "project-detail", projectId: p.id })
                     }
+                    onKeyDown={onEnter(() =>
+                      navigate({ name: "project-detail", projectId: p.id }),
+                    )}
                   >
                     <td className="px-4 py-3 text-sm text-white">
-                      {p.clientCompanyName || "—"}
+                      {p.clientCompanyName || "\u2014"}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
@@ -321,6 +333,7 @@ export default function DashboardPage({ actor, navigate }: Props) {
               Recent Invoices
             </CardTitle>
             <button
+              type="button"
               onClick={() => navigate({ name: "invoices" })}
               className="text-blue-400 text-xs hover:underline"
             >
@@ -346,10 +359,14 @@ export default function DashboardPage({ actor, navigate }: Props) {
                 {invoices.slice(0, 5).map((inv) => (
                   <tr
                     key={inv.id.toString()}
+                    tabIndex={0}
                     className="border-b border-[#223047]/50 hover:bg-white/5 cursor-pointer"
                     onClick={() =>
                       navigate({ name: "invoice-detail", invoiceId: inv.id })
                     }
+                    onKeyDown={onEnter(() =>
+                      navigate({ name: "invoice-detail", invoiceId: inv.id }),
+                    )}
                   >
                     <td className="px-4 py-3 text-sm text-white">
                       {inv.invoiceNumber}

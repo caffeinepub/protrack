@@ -64,16 +64,22 @@ export default function SettingsPage({ actor, navigate: _navigate }: Props) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className={labelClass}>Company Name</label>
+            <label htmlFor="settings-companyName" className={labelClass}>
+              Company Name
+            </label>
             <Input
+              id="settings-companyName"
               className={inputClass}
               value={form.companyName}
               onChange={(e) => set("companyName", e.target.value)}
             />
           </div>
           <div>
-            <label className={labelClass}>Address</label>
+            <label htmlFor="settings-address" className={labelClass}>
+              Address
+            </label>
             <Input
+              id="settings-address"
               className={inputClass}
               value={form.address}
               onChange={(e) => set("address", e.target.value)}
@@ -81,16 +87,22 @@ export default function SettingsPage({ actor, navigate: _navigate }: Props) {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={labelClass}>Phone</label>
+              <label htmlFor="settings-phone" className={labelClass}>
+                Phone
+              </label>
               <Input
+                id="settings-phone"
                 className={inputClass}
                 value={form.phone}
                 onChange={(e) => set("phone", e.target.value)}
               />
             </div>
             <div>
-              <label className={labelClass}>Email</label>
+              <label htmlFor="settings-email" className={labelClass}>
+                Email
+              </label>
               <Input
+                id="settings-email"
                 type="email"
                 className={inputClass}
                 value={form.email}
@@ -99,8 +111,11 @@ export default function SettingsPage({ actor, navigate: _navigate }: Props) {
             </div>
           </div>
           <div>
-            <label className={labelClass}>Website</label>
+            <label htmlFor="settings-website" className={labelClass}>
+              Website
+            </label>
             <Input
+              id="settings-website"
               className={inputClass}
               value={form.website}
               onChange={(e) => set("website", e.target.value)}

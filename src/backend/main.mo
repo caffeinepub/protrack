@@ -153,6 +153,11 @@ actor {
     name : Text;
   };
 
+  public type UserEntry = {
+    principal : Principal;
+    role : AccessControl.UserRole;
+  };
+
   // State Variables
   var clientIdCounter = 0;
   var projectIdCounter = 0;
@@ -172,6 +177,42 @@ actor {
   // Authorization
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
+
+  // Register caller — first caller becomes admin, subsequent callers become guest
+  public shared ({ caller }) func registerCaller() : async () {
+    if (caller.isAnonymous()) { return };
+    switch (accessControlState.userRoles.get(caller)) {
+      case (?_) { return }; // Already registered, no-op
+      case (null) {
+        if (not accessControlState.adminAssigned) {
+          accessControlState.userRoles.add(caller, #admin);
+          accessControlState.adminAssigned := true;
+        } else {
+          accessControlState.userRoles.add(caller, #guest);
+        };
+      };
+    };
+  };
+
+  // List all registered users (admin only)
+  public query ({ caller }) func listAllUsers() : async [UserEntry] {
+    if (not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Only admins can list users");
+    };
+    var result : [UserEntry] = [];
+    for ((p, r) in accessControlState.userRoles.entries()) {
+      result := result.concat([{ principal = p; role = r }]);
+    };
+    result;
+  };
+
+  // Remove a user (admin only)
+  public shared ({ caller }) func removeUser(user : Principal) : async () {
+    if (not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Only admins can remove users");
+    };
+    accessControlState.userRoles.remove(user);
+  };
 
   // User Profile Functions
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
