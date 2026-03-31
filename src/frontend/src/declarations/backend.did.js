@@ -13,6 +13,10 @@ export const UserRole = IDL.Variant({
   'user' : IDL.Null,
   'guest' : IDL.Null,
 });
+export const UserEntry = IDL.Record({
+  'principal' : IDL.Principal,
+  'role' : UserRole,
+});
 export const Time = IDL.Int;
 export const Client = IDL.Record({
   'id' : IDL.Nat,
@@ -176,11 +180,14 @@ export const idlService = IDL.Service({
     ),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'listAllInvoices' : IDL.Func([], [IDL.Vec(Invoice)], ['query']),
+  'listAllUsers' : IDL.Func([], [IDL.Vec(UserEntry)], ['query']),
   'listClients' : IDL.Func([], [IDL.Vec(Client)], ['query']),
   'listInvoicesByProject' : IDL.Func([IDL.Nat], [IDL.Vec(Invoice)], ['query']),
   'listProjects' : IDL.Func([], [IDL.Vec(Project)], ['query']),
   'listTasksByProject' : IDL.Func([IDL.Nat], [IDL.Vec(Task)], ['query']),
   'markNotificationAsRead' : IDL.Func([IDL.Nat], [], []),
+  'registerCaller' : IDL.Func([], [], []),
+  'removeUser' : IDL.Func([IDL.Principal], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'updateClient' : IDL.Func([IDL.Nat, Client], [], []),
   'updateCompanySettings' : IDL.Func([CompanySettings], [], []),
@@ -196,6 +203,10 @@ export const idlFactory = ({ IDL }) => {
     'admin' : IDL.Null,
     'user' : IDL.Null,
     'guest' : IDL.Null,
+  });
+  const UserEntry = IDL.Record({
+    'principal' : IDL.Principal,
+    'role' : UserRole,
   });
   const Time = IDL.Int;
   const Client = IDL.Record({
@@ -230,12 +241,12 @@ export const idlFactory = ({ IDL }) => {
     'clientWebsite' : IDL.Text,
     'createdAt' : Time,
     'clientEmail' : IDL.Text,
-    'dueDate' : Time,
+    'dueDate' : IDL.Int,
     'discountPercent' : IDL.Nat,
     'ourEmail' : IDL.Text,
     'clientAddress' : IDL.Text,
     'grandTotal' : IDL.Nat,
-    'invoiceDate' : Time,
+    'invoiceDate' : IDL.Int,
     'ourWebsite' : IDL.Text,
     'updatedAt' : Time,
     'invoiceNumber' : IDL.Text,
@@ -360,6 +371,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'listAllInvoices' : IDL.Func([], [IDL.Vec(Invoice)], ['query']),
+    'listAllUsers' : IDL.Func([], [IDL.Vec(UserEntry)], ['query']),
     'listClients' : IDL.Func([], [IDL.Vec(Client)], ['query']),
     'listInvoicesByProject' : IDL.Func(
         [IDL.Nat],
@@ -369,6 +381,8 @@ export const idlFactory = ({ IDL }) => {
     'listProjects' : IDL.Func([], [IDL.Vec(Project)], ['query']),
     'listTasksByProject' : IDL.Func([IDL.Nat], [IDL.Vec(Task)], ['query']),
     'markNotificationAsRead' : IDL.Func([IDL.Nat], [], []),
+    'registerCaller' : IDL.Func([], [], []),
+    'removeUser' : IDL.Func([IDL.Principal], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'updateClient' : IDL.Func([IDL.Nat, Client], [], []),
     'updateCompanySettings' : IDL.Func([CompanySettings], [], []),

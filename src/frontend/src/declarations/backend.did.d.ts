@@ -126,6 +126,10 @@ export interface Task {
   'projectId' : bigint,
 }
 export type Time = bigint;
+export interface UserEntry {
+  'principal' : Principal,
+  'role' : UserRole,
+}
 export interface UserProfile { 'name' : string }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
@@ -157,11 +161,14 @@ export interface _SERVICE {
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'listAllInvoices' : ActorMethod<[], Array<Invoice>>,
+  'listAllUsers' : ActorMethod<[], Array<UserEntry>>,
   'listClients' : ActorMethod<[], Array<Client>>,
   'listInvoicesByProject' : ActorMethod<[bigint], Array<Invoice>>,
   'listProjects' : ActorMethod<[], Array<Project>>,
   'listTasksByProject' : ActorMethod<[bigint], Array<Task>>,
   'markNotificationAsRead' : ActorMethod<[bigint], undefined>,
+  'registerCaller' : ActorMethod<[], undefined>,
+  'removeUser' : ActorMethod<[Principal], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'updateClient' : ActorMethod<[bigint, Client], undefined>,
   'updateCompanySettings' : ActorMethod<[CompanySettings], undefined>,
